@@ -13,7 +13,7 @@
         * @description Create a chart object.
         */
         chart = function (selector, opt) {
-            var _this = this, checkDependancis = function () {
+            var _this = this, checkDependency = function () {
                 if ("undefined" == typeof d3) { // check d3
                     console.error("d3 library is required.");
                     return false;
@@ -91,7 +91,7 @@
              * @description: draw graph first time
              */
             _this.draw = function () {
-                if (checkDependancis()) {
+                if (checkDependency()) {
                     var callback = function () {
                         _this.plot();
                     };
@@ -151,6 +151,17 @@
         var settings = {};
         this.mergeJson(settings, options);      // merge json of default properties and user defined properties
         settings["type"] = "diversity";
+        return new chart(selector, settings);
+    }
+
+    /**
+     * @description: to create line chart object
+     */
+    blue.lineChart = function (selector, options) {
+        // define default properties
+        var settings = {};
+        this.mergeJson(settings, options);      // merge json of default properties and user defined properties
+        settings["type"] = "line";
         return new chart(selector, settings);
     }
 
