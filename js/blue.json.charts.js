@@ -1,4 +1,5 @@
 (function() {
+    "use strict";
     var win = this,
         oldBlue = win.blue,
         /**
@@ -24,6 +25,20 @@
             // create properties to cache
             _this.data = [];
             _this.dataStatus = false;
+            _this.defaultColors = [
+                "#80B1D3", // Blue
+                "#FB8072", // Red
+                "#FDB462", // Orange
+                "#B3DE69", // Green
+                "#FFED6F", // Yellow
+                "#BC80BD", // Purple
+                "#8DD3C7", // Turquoise
+                "#CCEBC5", // Pale Blue
+                "#FFFFB3", // Pale Yellow
+                "#BEBADA", // Lavender
+                "#FCCDE5", // Pink
+                "#D9D9D9"  // Grey
+            ];
 
             /**
              * @description: get formate
@@ -63,7 +78,53 @@
              * @description: to plot the graph
              */
             _this.plot = function () {
-                console.log("plot graph");
+                var data = d3.range(0,20);
+                var color = d3.scale.category20c();
+                _this.svg = d3.select(selector).append('svg')
+                    .attr('width', 800)
+                    .attr('height', 600);
+
+                _this.svg.selectAll("circle")
+                    .data([1,2,3])
+                    .enter()
+                    .append("circle").attr("cx", function (d) {
+                        return 200+d*100;
+                    })
+                    .attr("cy", function (d) {
+                        return 100;
+                    })
+                    .attr("r", 30)
+                    .style("fill", function (d) {
+                        return color(d);
+                    });
+
+                _this.svg.append('rect')
+                    .attr('width', 100)
+                    .attr('height', 100)
+                    .attr('fill', color(0));
+
+                _this.svg.append('rect')
+                    .attr('x', 100)
+                    .attr('width', 100)
+                    .attr('height', 100)
+                    .attr('fill', color(1));
+
+
+                _this.svg.selectAll('rect').data(data)
+                    .enter()
+                    .append('rect')
+                    .attr("x", function (d) {
+                        return d*20;
+                    })
+                    .attr("y", function (d) {
+                        return 100+d*20;
+                    })
+                    .text(function(d){return color(d);})
+                    .attr('width', 100)
+                    .attr('height', 20)
+                    .attr('fill', function(d){
+                        return color(d);
+                    });
             }
 
             /**
