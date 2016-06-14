@@ -10,6 +10,18 @@ http://codepen.io/jay3dec/pen/uJrsb/
 http://jsfiddle.net/seldomawake/MV55j/1/
 http://bl.ocks.org/mbostock/7341714
 
+Responsive
+http://eyeseast.github.io/visible-data/2013/08/28/responsive-charts-with-d3/
+
+Rounded Corner
+http://stackoverflow.com/questions/12115691/svg-d3-js-rounded-corner-on-one-corner-of-a-rectangle
+
+2000 D3 Examples
+http://techslides.com/over-2000-d3-js-examples-and-demos
+
+D3 Graphs with steps
+http://zeroviscosity.com/d3-js-step-by-step/step-0-intro
+
 Tutorial:
 =========
 https://github.com/d3/d3/wiki/Tutorials
