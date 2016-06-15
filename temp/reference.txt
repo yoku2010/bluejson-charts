@@ -9,6 +9,7 @@ http://codepen.io/jay3dec/pen/uJrsb/
 
 http://jsfiddle.net/seldomawake/MV55j/1/
 http://bl.ocks.org/mbostock/7341714
+http://bl.ocks.org/mbostock/4062085
 
 Responsive
 http://eyeseast.github.io/visible-data/2013/08/28/responsive-charts-with-d3/
@@ -19,8 +20,21 @@ http://stackoverflow.com/questions/12115691/svg-d3-js-rounded-corner-on-one-corn
 2000 D3 Examples
 http://techslides.com/over-2000-d3-js-examples-and-demos
 
+D3 Examples
+http://bl.ocks.org/mbostock
+
 D3 Graphs with steps
 http://zeroviscosity.com/d3-js-step-by-step/step-0-intro
+
+slider
+http://bl.ocks.org/mbostock/6499018
+http://bl.ocks.org/mbostock/6498580
+
+scale
+http://bl.ocks.org/mbostock/6738109
+
+Logo
+http://bl.ocks.org/mbostock/3853405
 
 Tutorial:
 =========

@@ -1,4 +1,4 @@
-name	left	right
-A	79	21
-B	88	12
-C	71	29
+name	left	right	leftHover	rightHover
+A	79	21	66	34
+B	88	12	76	24
+C	71	29	54	46

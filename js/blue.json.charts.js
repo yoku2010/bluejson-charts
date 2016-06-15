@@ -111,6 +111,8 @@
             _this.dataFormat = function (d) {
                 d.left = +d.left;
                 d.right = +d.right;
+                d.leftHover = +d.leftHover;
+                d.rightHover = +d.rightHover;
                 return d;
             }
 
@@ -257,6 +259,7 @@
                 _this.svg.append("g")
                     .attr("fill", "none")
                     .attr("stroke", "#000")
+                    .attr("shape-rendering", "crispEdges")
                     .attr("transform", "translate(0," + (_this.height-_this.padding.bottom) + ")")
                     .call(_this.xAxisC2L);
 
@@ -264,6 +267,7 @@
                 _this.svg.append("g")
                     .attr("fill", "none")
                     .attr("stroke", "#000")
+                    .attr("shape-rendering", "crispEdges")
                     .attr("transform", "translate(0," + (_this.height-_this.padding.bottom) + ")")
                     .call(_this.xAxisC2R);
 
