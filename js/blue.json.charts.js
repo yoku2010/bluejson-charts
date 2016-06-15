@@ -111,8 +111,8 @@
             _this.dataFormat = function (d) {
                 d.left = +d.left;
                 d.right = +d.right;
-                d.leftHover = +d.leftHover;
-                d.rightHover = +d.rightHover;
+                d.leftSmall = +d.leftSmall;
+                d.rightSmall = +d.rightSmall;
                 return d;
             }
 
@@ -128,6 +128,7 @@
                 if (opt.data) {  // for json data object
                     _this.data = opt.data;
                     _this.dataFormat && _this.data.forEach(_this.dataFormat);
+                    _this.assignDomain();
                     callback && callback();
                 }
                 else {
@@ -135,6 +136,7 @@
                         d3.csv(opt.dataFile, _this.dataFormat, function(data){
                             _this.data = data;
                             _this.dataStatus = true;
+                            _this.assignDomain();
                             callback && callback();
                         });
                     }
@@ -142,20 +144,7 @@
                         d3.tsv(opt.dataFile, _this.dataFormat, function(data){
                             _this.data = data;
                             _this.dataStatus = true;
-
-                            var maxRight = d3.max(_this.data, function(d) { return d.right; }),
-                            maxLeft = d3.max(_this.data, function(d) { return d.left; }), finalMax;
-                            if (maxRight<=maxLeft) {
-                                finalMax = maxLeft;
-                            }
-                            else {
-                                finalMax = maxRight;
-                            }
-                            finalMax = 100;
-                            _this.xPointsRight.domain([0, finalMax]).nice();
-                            _this.xPointsLeft.domain([0, finalMax]).nice();
-                            _this.yPoints.domain(data.map(function(d) { return d.name; }));
-
+                            _this.assignDomain();
                             callback && callback();
                         });
                     }
@@ -163,6 +152,7 @@
                         d3.json(opt.dataFile, _this.dataFormat, function(data){
                             _this.data = data;
                             _this.dataStatus = true;
+                            _this.assignDomain();
                             callback && callback();
                         });
                     }
@@ -173,14 +163,46 @@
             }
 
             /**
+             * @description: to assign domain
+             */
+            _this.assignDomain = function () {
+                var maxRight = d3.max(_this.data, function(d) { return d.right; }),
+                maxLeft = d3.max(_this.data, function(d) { return d.left; }), finalMax;
+                if (maxRight<=maxLeft) {
+                    finalMax = maxLeft;
+                }
+                else {
+                    finalMax = maxRight;
+                }
+                finalMax = 100;
+                _this.xPointsRight.domain([0, finalMax]).nice();
+                _this.xPointsLeft.domain([0, finalMax]).nice();
+                _this.yPoints.domain(_this.data.map(function(d) { return d.name; }));
+            }
+
+            /**
              * @description: to plot the graph
              */
             _this.plot = function () {
                 var color = d3.scale.category20c(),
                 svgContainer = d3.select(selector).append("svg")
                     .attr("xmlns", "http://www.w3.org/2000/svg")
+                    .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
+                    .attr("version", "1.1")
+                    .attr("viewBox", "0 0 " + (_this.width + _this.margin.left + _this.margin.right) + " " + (_this.height + _this.margin.top + _this.margin.bottom))
                     .attr("width", _this.width + _this.margin.left + _this.margin.right)
                     .attr("height", _this.height + _this.margin.top + _this.margin.bottom);
+
+                svgContainer.append("defs")
+                    .append("pattern")
+                    .attr("patternUnits", "userSpaceOnUse")
+                    .attr("id", "bg")
+                    .attr("width", "480")
+                    .attr("height", "480")
+                    .append("svg:image")
+                    .attr("width", "480")
+                    .attr("height", "480")
+                    .attr("xlink:href", "img/scale.png");
 
                 _this.svg = svgContainer.append("g")
                    .attr("transform", "translate(" + _this.margin.left + "," + _this.margin.top + ")");
@@ -305,6 +327,20 @@
                     .attr("width", function(d) { return Math.abs(_this.xPointsRight(d.right) - _this.xPointsRight(0)); })
                     .attr("height", _this.yPoints.rangeBand());
 
+                // draw bar for right small graph
+                _this.svg.selectAll("rect.right-small-rect")
+                    .data(_this.data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "right-small-rect")
+                    .attr("fill", "url(#bg)")
+                    .attr("stroke-width", "0.5")
+                    .attr("stroke", "#000")
+                    .attr("x", function(d) { return _this.xPointsRight(Math.min(0, d.rightSmall)); })
+                    .attr("y", function(d) { return _this.yPoints(d.name) + _this.yPoints.rangeBand()*0.25; })
+                    .attr("width", function(d) { return Math.abs(_this.xPointsRight(d.rightSmall) - _this.xPointsRight(0)); })
+                    .attr("height", _this.yPoints.rangeBand()*0.5);
+
                 // draw bar text for right graph
                 _this.svg.selectAll("text.right-text")
                     .data(_this.data)
@@ -317,10 +353,33 @@
                         return _this.yPoints(d.name) + _this.yPoints.rangeBand()/2;
                     })
                     .attr("x", function(d, i) {
-                        return _this.xPointsRight(d.right) + 20;
+                        if (_this.xPointsRight(d.right) < _this.xPointsRight(d.rightSmall)) {
+                            return _this.xPointsRight(d.rightSmall) + 20;
+                        }
+                        else {
+                            return _this.xPointsRight(d.right) + 20;
+                        }
                     })
                     .text(function(d){
                          return d.right + "%";
+                    });
+
+                // draw bar text for right graph
+                _this.svg.selectAll("text.right-small-text")
+                    .data(_this.data)
+                    .enter()
+                    .append("text")
+                    .attr("class", "right-small-text")
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#000")
+                    .attr("y", function(d, i) {
+                        return _this.yPoints(d.name) - 5;
+                    })
+                    .attr("x", function(d, i) {
+                        return _this.xPointsRight(d.rightSmall);
+                    })
+                    .text(function(d){
+                         return d.rightSmall + "% (FTSE 100)";
                     });
 
                 // draw bar for left graph
@@ -335,6 +394,20 @@
                     .attr("width", function(d) { return Math.abs(_this.xPointsLeft(d.left) - _this.xPointsLeft(0)); })
                     .attr("height", _this.yPoints.rangeBand());
 
+                // draw bar for left small graph
+                _this.svg.selectAll("rect.left-small-rect")
+                    .data(_this.data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "left-small-rect")
+                    .attr("fill", "url(#bg)")
+                    .attr("stroke-width", "0.5")
+                    .attr("stroke", "#000")
+                    .attr("x", function(d) { return _this.xPointsLeft(d.leftSmall); })
+                    .attr("y", function(d) { return _this.yPoints(d.name) + _this.yPoints.rangeBand()*0.25; })
+                    .attr("width", function(d) { return Math.abs(_this.xPointsLeft(d.leftSmall) - _this.xPointsLeft(0)); })
+                    .attr("height", _this.yPoints.rangeBand()*0.5);
+
                 // draw bar text for left graph
                 _this.svg.selectAll("text.left-text")
                     .data(_this.data)
@@ -347,10 +420,33 @@
                         return _this.yPoints(d.name) + _this.yPoints.rangeBand()/2;
                     })
                     .attr("x", function(d, i) {
-                        return _this.xPointsLeft(d.left) - 20;
+                        if (_this.xPointsLeft(d.left) > _this.xPointsLeft(d.leftSmall)) {
+                            return _this.xPointsLeft(d.leftSmall) - 20;
+                        }
+                        else {
+                            return _this.xPointsLeft(d.left) - 20;
+                        }
                     })
                     .text(function(d){
                          return d.left + "%";
+                    });
+
+                // draw bar text for left graph
+                _this.svg.selectAll("text.left-small-text")
+                    .data(_this.data)
+                    .enter()
+                    .append("text")
+                    .attr("class", "left-small-text")
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#000")
+                    .attr("y", function(d, i) {
+                        return _this.yPoints(d.name) - 5;
+                    })
+                    .attr("x", function(d, i) {
+                        return _this.xPointsLeft(d.leftSmall);
+                    })
+                    .text(function(d){
+                         return d.leftSmall + "% (FTSE 100)";
                     });
 
                 // xLegend
